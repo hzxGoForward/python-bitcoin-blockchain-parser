@@ -70,8 +70,12 @@ class Script(object):
         """
         if self._operations is None:
             # Some coinbase scripts are garbage, they could not be valid
-            self._operations = list(self.script)
-
+            try:
+                self._operations = list(self.script)
+            except CScriptTruncatedPushDataError:
+                self._operations = "[INVALID]"
+            except CScriptInvalidError:
+                self._operations = "[INVALID]"
         return self._operations
 
     @property
@@ -133,3 +137,17 @@ class Script(object):
         return not self.is_pubkeyhash() and not self.is_pubkey() \
             and not self.is_p2sh() and not self.is_multisig() \
             and not self.is_return()
+
+    # add by hzx
+    def is_p2wpkh(self):
+        if len(self.operations) == 2:
+            a = bytes(self.operations[0])
+            b = bytes(self.operations[1])
+            return len(a)==0 and len(b) == 20
+
+    # add by hzx
+    def is_p2wsh(self):
+        if len(self.operations) == 2:
+            a = bytes(self.operations[0])
+            b = bytes(self.operations[1])
+            return len(a)==0 and len(b) == 32
