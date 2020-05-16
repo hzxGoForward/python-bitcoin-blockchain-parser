@@ -136,7 +136,8 @@ class Script(object):
     def is_unknown(self):
         return not self.is_pubkeyhash() and not self.is_pubkey() \
             and not self.is_p2sh() and not self.is_multisig() \
-            and not self.is_return()
+            and not self.is_return() and not self.is_p2wpkh()\
+            and not self.is_p2wsh()
 
     # add by hzx
     def is_p2wpkh(self):
@@ -144,6 +145,8 @@ class Script(object):
             a = bytes(self.operations[0])
             b = bytes(self.operations[1])
             return len(a)==0 and len(b) == 20
+        
+        return False
 
     # add by hzx
     def is_p2wsh(self):
@@ -151,3 +154,6 @@ class Script(object):
             a = bytes(self.operations[0])
             b = bytes(self.operations[1])
             return len(a)==0 and len(b) == 32
+        
+        return False
+    
